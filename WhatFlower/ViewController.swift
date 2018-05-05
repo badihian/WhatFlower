@@ -18,12 +18,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.viewDidLoad()
         
         imagePicker.delegate = self
-        imagePicker.sourceType = .savedPhotosAlbum
-        imagePicker.allowsEditing = false
+        imagePicker.sourceType = .camera
+        imagePicker.allowsEditing = true
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let userPickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+        if let userPickedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
             imageView.image = userPickedImage
         }
         
