@@ -88,6 +88,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 print(response)
                 
                 let flowerJSON : JSON = JSON(response.result.value!)
+                print("JSON VALUE: \(flowerJSON)")
                 let pageid = flowerJSON["query"]["pageids"][0].stringValue
                 let flowerDescription = flowerJSON["query"]["pages"][pageid]["extract"].stringValue
                 let flowerImageURL = flowerJSON["query"]["pages"][pageid]["thumbnail"]["source"].stringValue
