@@ -11,10 +11,12 @@ import CoreML
 import Vision
 import Alamofire
 import SwiftyJSON
+import SDWebImage
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var descriptionLabel: UILabel!
     
     let imagePicker = UIImagePickerController()
     let wikipediaURl = "https://en.wikipedia.org/w/api.php"
@@ -29,7 +31,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if let userPickedImage = info[UIImagePickerControllerEditedImage] as? UIImage {
-            imageView.image = userPickedImage
+//            imageView.image = userPickedImage
             guard let ciimage = CIImage(image: userPickedImage) else {
                 fatalError("Could not convert to CIImage.")
             }
@@ -71,18 +73,27 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let parameters : [String:String] = [
             "format" : "json",
             "action" : "query",
-            "prop" : "extracts",
+            "prop" : "extracts|pageimages",
             "exintro" : "",
             "explaintext" : "",
             "titles" : flowerName,
             "indexpageids" : "",
             "redirects" : "1",
+            "pithumbsize" : "500"
             ]
         
         Alamofire.request(wikipediaURl, method: .get, parameters: parameters).responseJSON { (response) in
             if response.result.isSuccess {
                 print("Successfully retrieved the wiki info.")
                 print(response)
+                
+                let flowerJSON : JSON = JSON(response.result.value!)
+                let pageid = flowerJSON["query"]["pageids"][0].stringValue
+                let flowerDescription = flowerJSON["query"]["pages"][pageid]["extract"].stringValue
+                let flowerImageURL = flowerJSON["query"]["pages"][pageid]["thumbnail"]["source"].stringValue
+                
+                self.descriptionLabel.text = flowerDescription
+                self.imageView.sd_setImage(with: URL(string: flowerImageURL))
             }
         }
 
